@@ -2,6 +2,58 @@
 
 A super simple and basic shopping basket system.
 
+## Assumptions
+
+* The return value of `basket.total` is not rounded. it is up to the caller to round the value if needed.
+* The value of `basket.total` is real time.
+* Since only one offer type is supported, there is no need to check for overlapping offers and conflicts in this state.
+
+
+## How it works
+
+The shopping basket system is built around several core components that work together to calculate order totals with discounts and delivery charges:
+
+### Core Components
+
+1. **Product**: Represents individual items with a name, unique code, and price
+2. **Catalogue**: Manages a collection of products and provides lookup functionality by product code
+3. **Basket**: The main shopping cart that holds items and calculates totals
+4. **DeliveryRule**: delivery charges based on order value thresholds
+5. **Offers**: Discount mechanisms that can be applied to specific products
+
+### System Flow
+
+#### 1. Initialization
+- A **Catalogue** is created with available products
+- **DeliveryRules** are defined with thresholds and corresponding charges
+- **Offers** are created for specific products (currently only "Buy One Get One for Half Price")
+- A **Basket** is initialized with the catalogue, delivery rules, and offers
+
+#### 2. Adding Items
+- Items are added to the basket using product codes
+- The basket validates that products exist in the catalogue
+- Item quantities are tracked in a hash structure, {product_code => quantity}
+
+#### 3. Total Calculation
+When `basket.total` is called, the system follows this sequence:
+
+1. **Calculate Subtotal**: Sum of all item prices per quantity
+2. **Apply Offers**: Calculate and subtract any applicable discounts
+3. **Add Delivery Charge**: Determine the appropriate delivery charge based on the subtotal after discounts
+4. **Return Final Total**: (Subtotal - discounts) + delivery charge
+
+### Delivery Charge Logic
+Delivery rules are processed in sorted order, and the first rule where the subtotal meets the threshold is applied.
+
+This is the given example:
+- Orders ≥ $90: Free delivery ($0)
+- Orders ≥ $50: $2.95 delivery
+- Orders < $50: $4.95 delivery
+
+### Offer System
+Currently supports "Buy One Get One for Half Price" only. Basically it applies a 50% discount to every second item of the same product this offer is applied to.
+
+
 ## Usage
 
 ## Example script
@@ -78,54 +130,3 @@ basket.items  # => {"R01"=>1, "G01"=>2, "B01"=>1}
 ```ruby
 basket.total
 ```
-
-## Assumptions
-
-* The return value of `basket.total` is not rounded. it is up to the caller to round the value if needed.
-* The value of `basket.total` is real time.
-* Since only one offer type is supported, there is no need to check for overlapping offers and conflicts in this state.
-
-
-## How it works
-
-The shopping basket system is built around several core components that work together to calculate order totals with discounts and delivery charges:
-
-### Core Components
-
-1. **Product**: Represents individual items with a name, unique code, and price
-2. **Catalogue**: Manages a collection of products and provides lookup functionality by product code
-3. **Basket**: The main shopping cart that holds items and calculates totals
-4. **DeliveryRule**: delivery charges based on order value thresholds
-5. **Offers**: Discount mechanisms that can be applied to specific products
-
-### System Flow
-
-#### 1. Initialization
-- A **Catalogue** is created with available products
-- **DeliveryRules** are defined with thresholds and corresponding charges
-- **Offers** are created for specific products (currently only "Buy One Get One for Half Price")
-- A **Basket** is initialized with the catalogue, delivery rules, and offers
-
-#### 2. Adding Items
-- Items are added to the basket using product codes
-- The basket validates that products exist in the catalogue
-- Item quantities are tracked in a hash structure, {product_code => quantity}
-
-#### 3. Total Calculation
-When `basket.total` is called, the system follows this sequence:
-
-1. **Calculate Subtotal**: Sum of all item prices per quantity
-2. **Apply Offers**: Calculate and subtract any applicable discounts
-3. **Add Delivery Charge**: Determine the appropriate delivery charge based on the subtotal after discounts
-4. **Return Final Total**: (Subtotal - discounts) + delivery charge
-
-### Delivery Charge Logic
-Delivery rules are processed in sorted order, and the first rule where the subtotal meets the threshold is applied.
-
-This is the given example:
-- Orders ≥ $90: Free delivery ($0)
-- Orders ≥ $50: $2.95 delivery
-- Orders < $50: $4.95 delivery
-
-### Offer System
-Currently supports "Buy One Get One for Half Price" only. Basically it applies a 50% discount to every second item of the same product this offer is applied to.
