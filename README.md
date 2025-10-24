@@ -8,7 +8,6 @@ A super simple and basic shopping basket system.
 * The value of `basket.total` is real time.
 * Since only one offer type is supported, there is no need to check for overlapping offers and conflicts in this state.
 * Tests are not provided due to time constraints.
-* DeliveryRule is a simple struct and does not have any logic. This can be expanded to include more complex logic if needed.
 
 
 ## How it works
@@ -23,16 +22,18 @@ The shopping basket system is built around several core components that work tog
 1. **Product**: Represents individual items with a name, unique code, and price
 2. **Catalogue**: Manages a collection of products and provides lookup functionality by product code
 3. **Basket**: The main shopping cart that holds items and calculates totals
-4. **DeliveryRule**: delivery charges based on order value thresholds
-5. **Offers**: Discount mechanisms that can be applied to specific products
+4. **DeliveryCharge**: Manages delivery charge calculation based on order value thresholds
+5. **DeliveryCharge::DeliveryRule**: Simple struct defining threshold and charge pairs
+6. **Offers**: Discount mechanisms that can be applied to specific products
 
 ### System Flow
 
 #### 1. Initialization
 - A **Catalogue** is created with available products
-- **DeliveryRules** are defined with thresholds and corresponding charges
+- **DeliveryCharge::DeliveryRules** are defined with thresholds and corresponding charges
+- A **DeliveryCharge** instance is created with the delivery rules
 - **Offers** are created for specific products (currently only "Buy One Get One for Half Price")
-- A **Basket** is initialized with the catalogue, delivery rules, and offers
+- A **Basket** is initialized with the catalogue, delivery charge instance, and offers
 
 #### 2. Adding Items
 - Items are added to the basket using product codes
@@ -48,7 +49,7 @@ When `basket.total` is called, the system follows this sequence:
 4. **Return Final Total**: (Subtotal - discounts) + delivery charge
 
 ### Delivery Charge Logic
-Delivery rules are processed in sorted order, and the first rule where the subtotal meets the threshold is applied.
+The `DeliveryCharge` class encapsulates delivery charge calculation logic. Delivery rules are processed in sorted order (highest threshold first), and the first rule where the subtotal meets the threshold is applied.
 
 This is the given example:
 - Orders ≥ $90: Free delivery ($0)
@@ -74,7 +75,7 @@ ruby example.rb
 Start IRB and require the necessary files:
 
 ```bash
-irb -r ./lib/catalogue.rb -r ./lib/basket.rb -r ./lib/offers/buy_one_get_one_for_half_price.rb -r ./lib/delivery_rule.rb
+irb -r ./lib/catalogue.rb -r ./lib/basket.rb -r ./lib/offers/buy_one_get_one_for_half_price.rb -r ./lib/delivery_charge.rb
 ```
 
 ### Creating Products and Catalogue
@@ -96,14 +97,16 @@ red_widget = catalogue.find_product_by_code("R01")
 green_widget = catalogue.find_product_by_code("G01")
 ```
 
-### Creating Delivery Charge Rules
+### Creating Delivery Charge Rules and DeliveryCharge
 
 ```ruby
 delivery_rules = [
-  DeliveryRule.new(90, 0),    # Free delivery for orders over $90
-  DeliveryRule.new(50, 2.95), # $2.95 delivery for orders over $50
-  DeliveryRule.new(0, 4.95)   # $4.95 delivery for orders under $50
+  DeliveryCharge::DeliveryRule.new(90, 0),    # Free delivery for orders over $90
+  DeliveryCharge::DeliveryRule.new(50, 2.95), # $2.95 delivery for orders over $50
+  DeliveryCharge::DeliveryRule.new(0, 4.95)   # $4.95 delivery for orders under $50
 ]
+
+delivery_charge = DeliveryCharge.new(delivery_rules)
 ```
 
 ### Creating Discounts
@@ -115,7 +118,7 @@ red_widget_offer = BuyOneGetOneForHalfPriceOffer.new(red_widget)
 ### Creating Basket
 
 ```ruby
-basket = Basket.new(catalogue, delivery_rules, [red_widget_offer])
+basket = Basket.new(catalogue, delivery_charge, [red_widget_offer])
 ```
 
 ### Adding Items to Basket
