@@ -1,7 +1,6 @@
 require_relative 'offer'
-require_relative 'buy_x_get_x_offer'
 
-class BuyOneGetOneForHalfPriceOffer < BuyXGetYOffer
+class BuyOneGetOneForHalfPriceOffer < Offer
   def initialize(product)
     @product = product
   end
