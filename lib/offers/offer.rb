@@ -1,5 +1,5 @@
 class Offer
-  def apply(_basket)
+  def total_discount(_basket)
     raise NotImplementedError
   end
 end

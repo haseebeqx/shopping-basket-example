@@ -1,5 +1,5 @@
 class Basket
-  attr_reader :items, :catalogue, :offers, :delivery_charge_rules
+  attr_reader :items
 
   def initialize(catalogue, delivery_charge_rules, offers = [])
     @items = Hash.new(0)
@@ -39,10 +39,10 @@ class Basket
 
   # Overlapping offers support is not needed at the moment
   def apply_offers
-    return 0 if offers.nil? || @offers.empty?
+    return 0 if @offers.nil? || @offers.empty?
     discount = 0
     @offers.each do |offer|
-      discount += offer.apply(self)
+      discount += offer.total_discount(self)
     end
     discount
   end
