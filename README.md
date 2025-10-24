@@ -120,9 +120,9 @@ basket = Basket.new(catalogue, delivery_rules, [red_widget_offer])
 you can add items by product code. It will select the product from the catalogue
 
 ```ruby
-basket.add_item("R01")      # Add 1 Red Widget
-basket.add_item("G01", 2)   # Add 2 Green Widgets
-basket.add_item("B01")      # Add 1 Blue Widgets
+basket.add("R01")      # Add 1 Red Widget
+basket.add("G01", 2)   # Add 2 Green Widgets
+basket.add("B01")      # Add 1 Blue Widgets
 
 # Check basket contents
 basket.items  # => {"R01"=>1, "G01"=>2, "B01"=>1}

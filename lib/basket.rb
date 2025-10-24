@@ -10,7 +10,7 @@ class Basket
     @offers = offers
   end
 
-  def add_item(item_code, quantity = 1)
+  def add(item_code, quantity = 1)
     raise "Item not found in catalogue" unless @catalogue.find_product_by_code(item_code)
 
     @items[item_code] += quantity
