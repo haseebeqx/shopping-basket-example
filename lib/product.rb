@@ -6,4 +6,8 @@ class Product
     @code = code
     @price = price
   end
+
+  def ==(other)
+    @code == other.code
+  end
 end
