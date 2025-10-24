@@ -13,6 +13,9 @@ A super simple and basic shopping basket system.
 
 The shopping basket system is built around several core components that work together to calculate order totals with discounts and delivery charges:
 
+> [!TIP]  
+> Usage instructions are provided in the [Usage](#usage) section.
+
 ### Core Components
 
 1. **Product**: Represents individual items with a name, unique code, and price
