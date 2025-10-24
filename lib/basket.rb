@@ -4,7 +4,7 @@ class Basket
   def initialize(catalogue, delivery_charge_rules, offers = [])
     @items = Hash.new(0)
     @catalogue = catalogue
-    @delivery_charge_rules = delivery_charge_rules
+    @delivery_charge_rules = delivery_charge_rules.sort_by(&:threshold).reverse
     @offers = offers
   end
 
@@ -15,6 +15,8 @@ class Basket
   end
 
   def total
+    return 0 if @items.empty?
+
     subtotal = 0
     @items.each do |item_code, quantity|
       product = @catalogue.find_product_by_code(item_code)
@@ -37,9 +39,9 @@ class Basket
     charge.charge
   end
 
-  # Overlapping offers support is not needed at the moment
   def apply_offers
     return 0 if @offers.nil? || @offers.empty?
+
     discount = 0
     @offers.each do |offer|
       discount += offer.total_discount(self)
