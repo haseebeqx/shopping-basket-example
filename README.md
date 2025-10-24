@@ -7,6 +7,8 @@ A super simple and basic shopping basket system.
 * The return value of `basket.total` is not rounded. it is up to the caller to round the value if needed.
 * The value of `basket.total` is real time.
 * Since only one offer type is supported, there is no need to check for overlapping offers and conflicts in this state.
+* Tests are not provided due to time constraints.
+* DeliveryRule is a simple struct and does not have any logic. This can be expanded to include more complex logic if needed.
 
 
 ## How it works
