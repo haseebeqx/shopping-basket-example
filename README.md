@@ -8,6 +8,7 @@ A super simple and basic shopping basket system.
 * The value of `basket.total` is real time.
 * Since only one offer type is supported, there is no need to check for overlapping offers and conflicts in this state.
 * Tests are not provided due to time constraints.
+* Delivery charges are included in the subtotal after the discounts are applied.
 
 
 ## How it works
